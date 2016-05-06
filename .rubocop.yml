@@ -1,0 +1,35 @@
+require: rubocop-rspec
+
+AllCops:
+  Exclude:
+    - 'vendor/**/*'
+    - 'bin/**/*'
+    - 'Vagrantfile'
+    - 'spec/spec_helper.rb'
+  TargetRubyVersion: 2.2
+
+Style/Encoding:
+  Enabled: false
+
+Style/NumericLiterals:
+  Enabled: false
+
+Metrics/ClassLength:
+  Enabled: false
+
+Metrics/AbcSize:
+  Enabled: false
+
+Metrics/MethodLength:
+  Enabled: false
+
+Metrics/CyclomaticComplexity:
+  Enabled: false
+
+Metrics/PerceivedComplexity:
+  Enabled: false
+
+# This checker was throwing errors, so disable for now
+RSpec/FilePath:
+  Enabled: false
+

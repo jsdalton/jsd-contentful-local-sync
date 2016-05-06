@@ -39,5 +39,99 @@ $ vagrant up
 
 This command will launch a virtual machine and provision in with all required project dependencies.
 
+If at any time the dependencies need to be refreshed, just run...
+
+```
+$ vagrant provision
+```
+
+...from the host computer.
+
+## Run Server
+
+To start the application, SSH on to the VM (via `vagrant ssh`) and run:
+
+```
+$ ./local-sync/bin/start
+```
+
+This will start a Rack server on port `4567` bound to `0.0.0.0`. Vagrant is configured to forward port 14567 on your host machine, so you should be able to visit the site from your host at:
+
+http://localhost:14567/
+
+
+## API Documentation
+
+The HTTP API is RESTful. It supports only JSON in requests and response.
+
+### Authentication
+
+Not implemented!
+
+### Summary
+
+| Endpoint | Description |
+| --- | --- | --- |
+| `GET /api` | Status check |
+| `POST /api/sync-requests` | Create a new sync request |
+
+### Endpoint Details
+
+#### `GET /api`
+
+Returns a basic status OK if the API is operational.
+
+##### Usage
+
+*Example:* Get status
+
+Request:
+
+```
+curl -X GET http://localhost:14567/api
+```
+
+Response:
+
+```
+{ "status": "ok" }
+```
+
+#### `POST /api/sync-requests`
+
+Creates a new request to sync content against Contentful space.
+
+##### Parameters
+
+* **`type`** (optional). Use `update` to perform a partial update, `full` to do a complete resync. (Default is `update`)
+
+##### Usage
+
+*Example:* Initiate a request for an update sync.
+
+Request:
+
+```
+curl -X POST http://localhost:14567/api/sync-request
+```
+
+Response:
+```
+{}
+```
+
+*Example:* Initiate a request for a full sync.
+
+Request:
+
+```
+curl -X POST -H "Content-Type: application/json" -d '{"type":"full"}' http://localhost:14567/api/sync-request
+```
+
+Response:
+```
+{}
+```
+
 
 

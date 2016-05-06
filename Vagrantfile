@@ -7,7 +7,7 @@ VAGRANTFILE_API_VERSION = '2'
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = 'ubuntu/trusty64'
-  config.vm.host_name = 'moneypenny-backend'
+  config.vm.host_name = 'local-sync'
 
   # Forwarded ports
   config.vm.network :forwarded_port, guest: 4567, host: 14567
@@ -23,7 +23,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                                           'actimeo=2'])
 
   # Host only network required for NFS
-  config.vm.network :private_network, ip: '10.0.0.75'
+  config.vm.network :private_network, ip: '10.0.0.79'
 
   # Requires Ansible 2.0+ to be installed on host machine
   config.vm.provision 'ansible' do |ansible|
