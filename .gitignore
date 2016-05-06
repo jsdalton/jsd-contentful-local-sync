@@ -1,0 +1,5 @@
+# project
+.vagrant
+*.retry
+.byebug_history
+vendor/bundle

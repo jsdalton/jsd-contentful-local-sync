@@ -1,0 +1,41 @@
+- hosts: all
+  vars:
+    project_dir: "{{ ansible_user_dir }}/local-sync"
+  tasks:
+    - name: Update apt cache
+      apt: update_cache=yes cache_valid_time=3600
+      become: yes
+
+    - name: Add Brightbox PPA apt key
+      apt_key:
+        id: "C3173AA6"
+        keyserver: keyserver.ubuntu.com
+        state: present
+      become: yes
+
+    - name: Add Brightbox PPA
+      action: apt_repository repo=ppa:brightbox/ruby-ng
+      become: yes
+
+    - name: Install Ruby 2.2
+      apt: name={{ item }} update_cache=yes cache_valid_time=3600
+      become: yes
+      with_items:
+        - ruby2.2
+        - ruby2.2-dev
+
+    - name: Install bundler
+      gem: name=bundler state=present user_install=no version=1.12.2
+      become: yes
+
+    - name: Link project directory to home folder
+      file:
+        src: /vagrant/
+        dest: "{{ project_dir }}"
+        state: link
+
+    - name: Install gems
+      command: bundle install
+      args:
+        chdir: "{{ project_dir  }}"
+        creates: /path/to/database
