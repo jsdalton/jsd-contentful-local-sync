@@ -6,6 +6,8 @@ AllCops:
     - 'bin/**/*'
     - 'Vagrantfile'
     - 'spec/spec_helper.rb'
+    - 'spec/fixtures/**/*'
+
   TargetRubyVersion: 2.2
 
 Style/Encoding:
@@ -13,6 +15,10 @@ Style/Encoding:
 
 Style/NumericLiterals:
   Enabled: false
+
+Metrics/LineLength:
+  Exclude:
+    - 'spec/*'
 
 Metrics/ClassLength:
   Enabled: false
@@ -31,5 +37,4 @@ Metrics/PerceivedComplexity:
 
 # This checker was throwing errors, so disable for now
 RSpec/FilePath:
-  Enabled: false
-
+  Enabled: true

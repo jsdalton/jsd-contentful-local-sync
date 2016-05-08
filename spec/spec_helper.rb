@@ -1,9 +1,12 @@
 ENV['RACK_ENV'] = 'test'
 require 'rack/test'
+require 'webmock/rspec'
+require 'redis'
 require 'multi_json'
 require 'json'
 
 require_relative '../app'
+
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
@@ -29,10 +32,22 @@ RSpec.configure do |config|
     mocks.verify_partial_doubles = true
   end
 
+  # Disable all external requests in test mode (will raise error in test run)
+  WebMock.disable_net_connect!(allow_localhost: true)
+
+  # Uncomment below to allow network access during tests
+  #WebMock.allow_net_connect!
+
   # Set up for feature tests
   shared_context "Feature specs", type: :feature do
     include Rack::Test::Methods
     let(:app) { LocalSyncApp }
+  end
+
+  # Clear Redis DB between tests
+  config.before(:each) do
+    redis = LocalSyncApp.settings.redis
+    redis.flushall
   end
 
   # Assorted helpers
@@ -42,15 +57,27 @@ RSpec.configure do |config|
     MultiJson.load(string)
   end
 
+  # Load a json fixture as a raw (presumably JSON compliant) string
+  def raw_json_fixture(name)
+    File.read(File.join(File.dirname(__FILE__), "fixtures/json/#{name.to_s}.json"))
+  end
+
   # Load a json fixture as a hash
   def json_fixture(name)
     MultiJson.load(
-      File.read File.dirname(__FILE__) + "fixtures/json/#{name.to_s}.json"
+      raw_json_fixture(name)
+    )
+  end
+
+  # Load the result of evalutaing the file
+  def ruby_fixture(name)
+    eval(
+      File.read(File.join(File.dirname(__FILE__), "fixtures/ruby/#{name.to_s}.rb"))
     )
   end
 
   # POST json as actual json
-  def post_json(uri, payload)
+  def post_json(uri, payload='{}')
     post(uri, payload, { "CONTENT_TYPE" => "application/json" })
   end
 

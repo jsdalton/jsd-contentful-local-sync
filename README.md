@@ -49,10 +49,16 @@ $ vagrant provision
 
 ## Run Server
 
-To start the application, SSH on to the VM (via `vagrant ssh`) and run:
+To start the application, from the VM: SSH on to the VM (via `vagrant ssh`) and run:
 
 ```
 $ ./local-sync/bin/start
+```
+
+Or to run it from the host as a one-liner:
+
+```
+vagrant ssh -c "cd local-sync && ./bin/start"
 ```
 
 This will start a Rack server on port `4567` bound to `0.0.0.0`. Vagrant is configured to forward port 14567 on your host machine, so you should be able to visit the site from your host at:
@@ -83,7 +89,7 @@ Returns a basic status OK if the API is operational.
 
 ##### Usage
 
-*Example:* Get status
+*Example: Get status*
 
 Request:
 
@@ -103,35 +109,195 @@ Creates a new request to sync content against Contentful space.
 
 ##### Parameters
 
-* **`type`** (optional). Use `update` to perform a partial update, `full` to do a complete resync. (Default is `update`)
+* **`initial`** (optional). Set to `true` to do a complete resync and to clear the local data store. (Default is `false`)
 
 ##### Usage
 
-*Example:* Initiate a request for an update sync.
+*Example: Initiate a request for an update sync.*
 
 Request:
 
 ```
-curl -X POST http://localhost:14567/api/sync-request
+curl -X POST -H "Content-Type: application/json" -d '{}' http://localhost:14567/api/sync-requests
 ```
 
 Response:
+
 ```
-{}
+{
+  "id": "d6282de4-bb4a-4bf1-990f-48b0d1350ce4",
+  "created_at": "2016-05-08T19:49:45+00:00",
+  "next_sync_url": "https://cdn.contentful.com/spaces/ti1zf61egylr/sync?sync_token=w5ZGw6JFwqZmVcKsE8Kow4grw45QdybCmULCncKSOsOGw58_w6jCoyVuMMKww74PSi1LwrwFJHbCvcO6WQhewptgDCPCp8O1FDjDjSLChCXCuk8Ow6vDhUzDtcOtERvCrgvDkMO_RsKWG8O_HcOlwrjDvwpe",
+  "initial": false
+}
 ```
 
-*Example:* Initiate a request for a full sync.
+Note: The response will contain a value of `true` for "initial" if a previous sync was not found (and thus the local store needed to be reloaded). 
+
+*Example: Initiate a request for a fresh sync.*
+
+When initial is true, a complete sync will always be requested and the local data store cleared.
 
 Request:
 
 ```
-curl -X POST -H "Content-Type: application/json" -d '{"type":"full"}' http://localhost:14567/api/sync-request
+curl -X POST -H "Content-Type: application/json" -d '{"initial":"true"}' http://localhost:14567/api/sync-requests
 ```
 
 Response:
+
 ```
-{}
+{
+  "id": "d6282de4-bb4a-4bf1-990f-48b0d1350ce4",
+  "created_at": "2016-05-08T19:49:45+00:00",
+  "next_sync_url": "https://cdn.contentful.com/spaces/ti1zf61egylr/sync?sync_token=w5ZGw6JFwqZmVcKsE8Kow4grw45QdybCmULCncKSOsOGw58_w6jCoyVuMMKww74PSi1LwrwFJHbCvcO6WQhewptgDCPCp8O1FDjDjSLChCXCuk8Ow6vDhUzDtcOtERvCrgvDkMO_RsKWG8O_HcOlwrjDvwpe",
+  "initial": true
+}
 ```
 
+#### `GET /entries`
 
+Get a complete list of entries stored locally. If no sync has been performed, no entries will be returned.
 
+##### Usage
+
+*Example: Get entries when a sync has not yet been performed.*
+
+Request:
+
+```
+curl -X GET http://localhost:14567/api/entries
+```
+
+Response:
+
+```
+{
+  "sys": {
+    "type": "Array"
+  },
+  "total": 0,
+  "items": []
+}
+```
+
+*Example: Get entries when a sync has already been performed*
+
+Request:
+
+```
+curl -X GET http://localhost:14567/api/entries
+```
+
+Response:
+
+```
+{
+  "sys": {
+    "type": "Array"
+  },
+  "total": 3,
+  "items": [{
+    "fields": {
+      "name": "Piano",
+      "description": "A beautiful piano. Gently used.",
+      "price": 40
+    },
+    "sys": {
+      "space": {
+        "sys": {
+          "type": "Link",
+          "linkType": "Space",
+          "id": "ti1zf61egylr"
+        }
+      },
+      "id": "5UM2X64H1SS204gK6quySW",
+      "type": "Entry",
+      "createdAt": "2016-05-07T03:20:30.867Z",
+      "updatedAt": "2016-05-07T23:43:34.965Z",
+      "revision": 2,
+      "contentType": {
+        "sys": {
+          "type": "Link",
+          "linkType": "ContentType",
+          "id": "product"
+        }
+      }
+    }
+  }, {
+    "fields": {
+      "name": "Lounge Chair",
+      "description": "A comfortable lounge chair",
+      "price": 15
+    },
+    "sys": {
+      "space": {
+        "sys": {
+          "type": "Link",
+          "linkType": "Space",
+          "id": "ti1zf61egylr"
+        }
+      },
+      "id": "78o4nLrLrOqUuAQaiMmUy6",
+      "type": "Entry",
+      "createdAt": "2016-05-07T03:20:52.887Z",
+      "updatedAt": "2016-05-07T03:20:52.887Z",
+      "revision": 1,
+      "contentType": {
+        "sys": {
+          "type": "Link",
+          "linkType": "ContentType",
+          "id": "product"
+        }
+      }
+    }
+  }, {
+    "fields": {
+      "name": "Coffee Table",
+      "description": "It's a sturdy coffee table.",
+      "price": 50
+    },
+    "sys": {
+      "space": {
+        "sys": {
+          "type": "Link",
+          "linkType": "Space",
+          "id": "ti1zf61egylr"
+        }
+      },
+      "id": "6tF2LfRmU0koWuUK2eQmqI",
+      "type": "Entry",
+      "createdAt": "2016-05-07T23:43:18.846Z",
+      "updatedAt": "2016-05-07T23:43:18.846Z",
+      "revision": 1,
+      "contentType": {
+        "sys": {
+          "type": "Link",
+          "linkType": "ContentType",
+          "id": "product"
+        }
+      }
+    }
+  }]
+}
+```
+
+#### `DELETE /entries`
+
+Delete ALL entries and sync requests stored locally. This is a way of manually clearing out the local store to a pristine state.
+
+##### Usage
+
+*Example: Delete everything*
+
+Request:
+
+```
+curl -X DELETE http://localhost:14567/api/entries
+```
+
+Response:
+
+```
+{ "status": "ok" }
+```
