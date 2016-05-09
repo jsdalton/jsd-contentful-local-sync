@@ -1,13 +1,14 @@
 require 'sinatra/base'
 require 'sinatra/contrib'
-require "sinatra/config_file"
-require "redis"
+require 'sinatra/config_file'
+require 'redis'
 
 require_relative('./app/services/build_entries_response')
 require_relative('./app/services/synchronize_contentful_data')
 require_relative('./app/stores/contentful_entry_store')
 require_relative('./app/stores/sync_request_store')
 
+# Main app
 class LocalSyncApp < Sinatra::Application
   register Sinatra::Contrib
   register Sinatra::ConfigFile
@@ -15,15 +16,15 @@ class LocalSyncApp < Sinatra::Application
   config_file './config.yml'
 
   configure do
-    set :redis, Proc.new {
+    set :redis, proc {
       Redis.new(
         host: settings.redis_host,
         port: settings.redis_port,
-        db: settings.redis_db,
+        db: settings.redis_db
       )
     }
 
-    set :contentful, Proc.new {
+    set :contentful, proc {
       Contentful::Client.new(
         access_token: settings.contentful_access_token,
         space: settings.contentful_space,
@@ -34,12 +35,12 @@ class LocalSyncApp < Sinatra::Application
 
   # Hello world on the home page
   get '/' do
-    "Hello, world!"
+    'Hello, world!'
   end
 
   # A status check on the API endpoint
   get '/api' do
-    json({ status: :ok })
+    json(status: :ok)
   end
 
   # Fetches all the entries from the local store
@@ -56,16 +57,16 @@ class LocalSyncApp < Sinatra::Application
     contentful_entry_store.delete_all
     sync_request_store.delete_all
 
-    json({ status: :ok })
+    json(status: :ok)
   end
 
   # Initiaties a new sync request and populates the local store
   post '/api/sync-requests' do
-    initial = !!payload['initial']
+    initial = !!payload['initial'] # rubocop:disable Style/DoubleNegation
     begin
       sync_request = SynchronizeContentfulData.new.call(initial: initial)
-    rescue SocketError => e
-      return 504
+    rescue SocketError
+      halt 504, 'Contentful unavailable'
     end
 
     json(sync_request.attributes)
@@ -75,7 +76,11 @@ class LocalSyncApp < Sinatra::Application
     def payload
       request.body.rewind
       body = request.body.read
-      body.empty? ? {} : JSON.parse(body)
+      begin
+        body.empty? ? {} : JSON.parse(body)
+      rescue JSON::ParserError => e
+        halt 400, "JSON::ParserError: #{e.message}"
+      end
     end
   end
 end
