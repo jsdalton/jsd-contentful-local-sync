@@ -62,7 +62,12 @@ class LocalSyncApp < Sinatra::Application
   # Initiaties a new sync request and populates the local store
   post '/api/sync-requests' do
     initial = !!payload['initial']
-    sync_request = SynchronizeContentfulData.new.call(initial: initial)
+    begin
+      sync_request = SynchronizeContentfulData.new.call(initial: initial)
+    rescue SocketError => e
+      return 504
+    end
+
     json(sync_request.attributes)
   end
 

@@ -5,7 +5,7 @@ class FetchContentfulDataChanges
   end
 
   def call(next_sync_url: nil)
-    sync = @client.sync(next_sync_url || { initial: true })
+    sync = @client.sync(next_sync_url || { initial: true, type: 'Entry' })
     resources = []
     sync.each_item do |resource|
       resources << resource
