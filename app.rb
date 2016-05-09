@@ -66,7 +66,7 @@ class LocalSyncApp < Sinatra::Application
     begin
       sync_request = SynchronizeContentfulData.new.call(initial: initial)
     rescue SocketError
-      halt 504, 'Contentful unavailable'
+      halt 504, 'Connection to Contentful unavailable!'
     end
 
     json(sync_request.attributes)

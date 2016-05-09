@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+
+# Params: $1 setup text, $2 command; $3 print stderr
+function exec_command {
+  echo
+  echo -e $1
+  read -p "[Press any key to continue]"
+  echo
+  local cmd=$2
+  echo "$" $cmd
+  if [ $3 ];
+  then
+    $cmd
+  else
+    $cmd 2>/dev/null
+  fi
+  echo
+}
+
+echo "Quick demo. Be sure the server is up and running..."
+read -p "[Press any key to continue]"
+
+# Clear out  any existing data in the store.
+curl -s -X DELETE http://localhost:14567/api/entries >/dev/null || \
+  (echo -e "\nNo server running! Exiting..." && exit 1)
+
+exec_command "First, attempt to get entries from the local store..." \
+  'curl -X GET http://localhost:14567/api/entries'
+
+exec_command "Nothing in the store yet. Do an initial sync..." \
+  'curl -X POST -H "Content-Type: application/json" -d '{}' http://localhost:14567/api/sync-requests'
+
+exec_command "Now we should have local data. Get entries again..." \
+  'curl -X GET http://localhost:14567/api/entries'
+
+exec_command "Next, go add/update/remove some entries on Contentful. Then we'll do another sync..." \
+  'curl -X POST -H "Content-Type: application/json" -d '{}' http://localhost:14567/api/sync-requests'
+
+exec_command "Any updates you made in Contentful should now be synced locally. Get entries again to see them..." \
+  'curl -X GET http://localhost:14567/api/entries'
+
+exec_command "Now let's try it with no Internet. First, turn off your wifi..." \
+  'curl -I https://cdn.contentful.com/spaces/cfexampleapi/entries?access_token=b4c0n73n7fu1' \
+  'true'
+
+exec_command "You should see a 'Could not resolve host...' error message above. Now let's try to do a sync..." \
+  'curl -i -X POST -H "Content-Type: application/json" -d '{}' http://localhost:14567/api/sync-requests'
+
+exec_command "No connection to Contentful so we got a 504. Let's see if we can still access entries locally..." \
+  'curl -X GET http://localhost:14567/api/entries'
+
+exec_command "Yep! (You can turn your Internet back on now.)\n\nNow let's clear our local entries out..." \
+  'curl -X DELETE http://localhost:14567/api/entries'
+
+exec_command "And we should be back where we started. Get entries one last time..." \
+  'curl -X GET http://localhost:14567/api/entries'
+
+echo
+echo "Local store is empty once again. That's it!"

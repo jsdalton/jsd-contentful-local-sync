@@ -71,58 +71,16 @@ http://localhost:14567/
 
 ## Example Usage
 
-With the server running, you can send requests to the various API endpoints. For example:
+With the server running, you can send requests to the various API endpoints.
+
+You can view a live demo that excercises these endpoints by running this script from the project root. 
 
 ```
-# Nothing in the local store yet
-$ curl -X GET http://localhost:14567/api/entries
-{"sys":{"type":"Array"},"total":0,"items":[]}
-
-# Do an initial sync
-$ curl -X POST -H "Content-Type: application/json" -d '{}' http://localhost:14567/api/sync-requests
-{"id":"f55ab177-f0b5-4d0b-a075-1be047cd3174","created_at":"2016-05-09T02:55:49+00:00","next_sync_url":"https://cdn.contentful.com/spaces/ti1zf61egylr/sync?sync_token=w5ZGw6JFwqZmVcKsE8Kow4grw45QdybCmULCncKSOsOGw58_w6jCoyVuMMKww74PSi1LwrwFJHbCvcO6WQhewptgDCMGwooLTwvDtsOTfXjDs0UXdsOMwqvCo3lVElIXRCtow7HCiTc3wqVnwqzCmQ","initial":true}
-
-# Now we have some local data
-$ curl -X GET http://localhost:14567/api/entries
-{"sys":{"type":"Array"},"total":3,"items":[{"fields":{"name":"Piano","description":"A beautiful piano. Gently used.","price":40},"sys":{"space":{"sys":{"type":"Link","linkType":"Space","id":"ti1zf61egylr"}},"id":"5UM2X64H1SS204gK6quySW","type":"Entry","createdAt":"2016-05-07T03:20:30.867Z","updatedAt":"2016-05-07T23:43:34.965Z","revision":2,"contentType":{"sys":{"type":"Link","linkType":"ContentType","id":"product"}}}},{"fields":{"name":"Lounge Chair","description":"A comfortable lounge chair","price":15},"sys":{"space":{"sys":{"type":"Link","linkType":"Space","id":"ti1zf61egylr"}},"id":"78o4nLrLrOqUuAQaiMmUy6","type":"Entry","createdAt":"2016-05-07T03:20:52.887Z","updatedAt":"2016-05-07T03:20:52.887Z","revision":1,"contentType":{"sys":{"type":"Link","linkType":"ContentType","id":"product"}}}},{"fields":{"name":"Coffee Table","description":"It's a sturdy coffee table.","price":50},"sys":{"space":{"sys":{"type":"Link","linkType":"Space","id":"ti1zf61egylr"}},"id":"6tF2LfRmU0koWuUK2eQmqI","type":"Entry","createdAt":"2016-05-07T23:43:18.846Z","updatedAt":"2016-05-07T23:43:18.846Z","revision":1,"contentType":{"sys":{"type":"Link","linkType":"ContentType","id":"product"}}}}]}
-
-# Add another entry in Contentful, then do another sync
-$ curl -X POST -H "Content-Type: application/json" -d '{}' http://localhost:14567/api/sync-requests
-{"id":"ccfb895f-af84-4ffc-9e11-14daeebfb944","created_at":"2016-05-09T02:57:10+00:00","next_sync_url":"https://cdn.contentful.com/spaces/ti1zf61egylr/sync?sync_token=w5ZGw6JFwqZmVcKsE8Kow4grw45QdyZlwoTCkcOUw69yw4oswrpiDsK2YsKgw6zCsVfCpMKvMEoqw5Y_w4lCw4Ibw7HDh3fCsSPDu3cgw5gwKQF8wqUUJwAvwrLDrMOcw7vCmzZwwq9fRzTCunodUBFRBw","initial":false}
-
-# Our new entry got added to the end
-$ curl -X GET http://localhost:14567/api/entries
-{"sys":{"type":"Array"},"total":4,"items":[{"fields":{"name":"Piano","description":"A beautiful piano. Gently used.","price":40},"sys":{"space":{"sys":{"type":"Link","linkType":"Space","id":"ti1zf61egylr"}},"id":"5UM2X64H1SS204gK6quySW","type":"Entry","createdAt":"2016-05-07T03:20:30.867Z","updatedAt":"2016-05-07T23:43:34.965Z","revision":2,"contentType":{"sys":{"type":"Link","linkType":"ContentType","id":"product"}}}},{"fields":{"name":"Lounge Chair","description":"A comfortable lounge chair","price":15},"sys":{"space":{"sys":{"type":"Link","linkType":"Space","id":"ti1zf61egylr"}},"id":"78o4nLrLrOqUuAQaiMmUy6","type":"Entry","createdAt":"2016-05-07T03:20:52.887Z","updatedAt":"2016-05-07T03:20:52.887Z","revision":1,"contentType":{"sys":{"type":"Link","linkType":"ContentType","id":"product"}}}},{"fields":{"name":"Coffee Table","description":"It's a sturdy coffee table.","price":50},"sys":{"space":{"sys":{"type":"Link","linkType":"Space","id":"ti1zf61egylr"}},"id":"6tF2LfRmU0koWuUK2eQmqI","type":"Entry","createdAt":"2016-05-07T23:43:18.846Z","updatedAt":"2016-05-07T23:43:18.846Z","revision":1,"contentType":{"sys":{"type":"Link","linkType":"ContentType","id":"product"}}}},{"fields":{"name":"Bed","description":"A comfy bed.","price":80},"sys":{"space":{"sys":{"type":"Link","linkType":"Space","id":"ti1zf61egylr"}},"id":"bbE3lBZNTyWEC4KMu2qW4","type":"Entry","createdAt":"2016-05-09T02:56:45.511Z","updatedAt":"2016-05-09T02:56:45.511Z","revision":1,"contentType":{"sys":{"type":"Link","linkType":"ContentType","id":"product"}}}}]}
-
-# (Turn off our wifi) Uh oh, lost our Internet connection!
-$ curl -I https://cdn.contentful.com/spaces/cfexampleapi/entries?access_token=b4c0n73n7fu1
-curl: (6) Could not resolve host: cdn.contentful.com
-
-# Sync returns a 504 since Contentful is unavailble
-$ curl -i -X POST -H "Content-Type: application/json" -d '{}' http://localhost:14567/api/sync-requests && echo
-HTTP/1.1 504 Gateway Timeout
-Content-Type: text/html;charset=utf-8
-Content-Length: 0
-X-Xss-Protection: 1; mode=block
-X-Content-Type-Options: nosniff
-X-Frame-Options: SAMEORIGIN
-Server: WEBrick/1.3.1 (Ruby/2.2.4/2015-12-16)
-Date: Mon, 09 May 2016 02:57:40 GMT
-Connection: Keep-Alive
-
-
-# Fortunately, we can still access our data, since it's saved locally
-$ curl -X GET http://localhost:14567/api/entries
-{"sys":{"type":"Array"},"total":4,"items":[{"fields":{"name":"Piano","description":"A beautiful piano. Gently used.","price":40},"sys":{"space":{"sys":{"type":"Link","linkType":"Space","id":"ti1zf61egylr"}},"id":"5UM2X64H1SS204gK6quySW","type":"Entry","createdAt":"2016-05-07T03:20:30.867Z","updatedAt":"2016-05-07T23:43:34.965Z","revision":2,"contentType":{"sys":{"type":"Link","linkType":"ContentType","id":"product"}}}},{"fields":{"name":"Lounge Chair","description":"A comfortable lounge chair","price":15},"sys":{"space":{"sys":{"type":"Link","linkType":"Space","id":"ti1zf61egylr"}},"id":"78o4nLrLrOqUuAQaiMmUy6","type":"Entry","createdAt":"2016-05-07T03:20:52.887Z","updatedAt":"2016-05-07T03:20:52.887Z","revision":1,"contentType":{"sys":{"type":"Link","linkType":"ContentType","id":"product"}}}},{"fields":{"name":"Coffee Table","description":"It's a sturdy coffee table.","price":50},"sys":{"space":{"sys":{"type":"Link","linkType":"Space","id":"ti1zf61egylr"}},"id":"6tF2LfRmU0koWuUK2eQmqI","type":"Entry","createdAt":"2016-05-07T23:43:18.846Z","updatedAt":"2016-05-07T23:43:18.846Z","revision":1,"contentType":{"sys":{"type":"Link","linkType":"ContentType","id":"product"}}}},{"fields":{"name":"Bed","description":"A comfy bed.","price":80},"sys":{"space":{"sys":{"type":"Link","linkType":"Space","id":"ti1zf61egylr"}},"id":"bbE3lBZNTyWEC4KMu2qW4","type":"Entry","createdAt":"2016-05-09T02:56:45.511Z","updatedAt":"2016-05-09T02:56:45.511Z","revision":1,"contentType":{"sys":{"type":"Link","linkType":"ContentType","id":"product"}}}}]}
-
-# Clear out the local store
-$ curl -X DELETE http://localhost:14567/api/entries
-{"status":"ok"}
-
-# And we're back where we started
-$ curl -X GET http://localhost:14567/api/entries
-{"sys":{"type":"Array"},"total":0,"items":[]}
+$ ./bin/demo
 ```
+
+Note: Although the server needs to be running, the script itself is just a bunch of curl commands and is intended to run from your host computer.
+
 
 
 ## API Documentation
