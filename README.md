@@ -18,8 +18,8 @@ At any point it should be possible through HTTP calls
 * to trigger a sync that incrementally updates the local data.
 * to completely reset the local data by triggering a full initial sync.
 
-[1] http://docs.contentfulcda.apiary.io/#reference/synchronization
-[2] https://cdn.contentful.com/spaces/cfexampleapi/entries?access_token=b4c0n73n7fu1
+[1]: http://docs.contentfulcda.apiary.io/#reference/synchronization
+[2]: https://cdn.contentful.com/spaces/cfexampleapi/entries?access_token=b4c0n73n7fu1
 
 ## Install
 
@@ -27,9 +27,9 @@ At any point it should be possible through HTTP calls
 
 To install and run the application using Vagrant, the following are required on the host computer:
 
-* Vagrant >= 1.8.1
-* Ansible >= 2.0
-* Virtual Box
+* [Vagrant](https://www.vagrantup.com/) >= 1.8.1
+* [Ansible](http://docs.ansible.com/ansible/index.html) >= 2.0
+* [Virtual Box](https://www.virtualbox.org/wiki/Downloads)
 
 To install, cd into the project directory and run:
 
@@ -37,7 +37,7 @@ To install, cd into the project directory and run:
 $ vagrant up
 ```
 
-This command will launch a virtual machine and provision in with all required project dependencies.
+This command will launch a virtual machine and provision it with all required project dependencies.
 
 If at any time the dependencies need to be refreshed, just run...
 
@@ -67,7 +67,7 @@ vagrant ssh -c "cd local-sync && ./bin/start"
 
 This will start a Rack server on port `4567` bound to `0.0.0.0`. Vagrant is configured to forward port 14567 on your host machine, so you should be able to see a "Hello, World" message from your host at:
 
-http://localhost:14567/
+[http://localhost:14567](http://localhost:14567)
 
 ## Example Usage
 

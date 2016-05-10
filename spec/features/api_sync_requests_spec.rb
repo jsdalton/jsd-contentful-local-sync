@@ -37,7 +37,6 @@ describe '/api/sync-requests', type: :feature do
 
         it 'includes initial false in the response' do
           post '/api/sync-requests'
-          puts JSON.pretty_generate(response_json)
           expect(response_json).to include('initial' => false)
         end
 
