@@ -15,9 +15,6 @@ describe ProcessContentfulDataChanges do
       before :each do
         stub_request(:get, %r{cdn\.contentful\.com\/spaces\/.+\/sync\?initial=true})
           .to_return(status: 200, body: body)
-      end
-
-      before :each do
         kwargs[:initial] = true
       end
 
@@ -40,7 +37,6 @@ describe ProcessContentfulDataChanges do
         before :each do
           contentful_entry = ContentfulEntry.new(fields: {}, sys: {})
           contentful_entry_store.save(contentful_entry)
-          expect(contentful_entry_store.all).not_to be_empty
         end
 
         it 'erases the existing entries before adding the new ones' do
@@ -57,10 +53,9 @@ describe ProcessContentfulDataChanges do
       before :each do
         stub_request(:get, %r{cdn\.contentful\.com\/spaces\/.+\/sync\?sync_token=.+})
           .to_return(status: 200, body: raw_json_fixture('contentful/subsequent_sync_response'))
-      end
-
-      before :each do
         kwargs[:initial] = true
+
+        # Populate the local store with some existing entries to test changes against
         contentful_entry_store.import(ruby_fixture('store_data_with_initial_resources'))
       end
 

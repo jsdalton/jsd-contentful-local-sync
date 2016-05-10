@@ -25,7 +25,6 @@ describe FetchContentfulDataChanges do
     context 'when next_sync_url not provided' do
       let(:kwargs) { { next_sync_url: nil } }
       let(:body) { raw_json_fixture 'contentful/initial_sync_response' }
-
       before :each do
         stub_request(:get, %r{cdn\.contentful\.com\/spaces\/.+\/sync\?initial=true})
           .to_return(status: 200, body: body)
@@ -36,7 +35,6 @@ describe FetchContentfulDataChanges do
 
     context 'when next_sync_url is provided' do
       let(:kwargs) { { next_sync_url: 'https://cdn.contentful.com/spaces/ti1zf61egylr/sync?sync_token=w5ZGw6JFwqZmVcKsE8Kow4grw45QdyYWw7XCqcKrREHCpCp5fcOSw5PDu8KYw4PCsAfDhDvDhsKWw7spwrUfw7ttw4fCu8Ktw6vDt0PCqCzDgBDDg8K6Sy_Dh8KyKFEkwqXCiU7Dqg1VH0dqAsKLXsKrwp1mS8OGw4k' } }
-
       before :each do
         stub_request(:get, %r{cdn\.contentful\.com\/spaces\/.+\/sync\?sync_token=.+})
           .to_return(status: 200, body: body)

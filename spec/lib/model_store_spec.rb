@@ -19,6 +19,12 @@ describe ModelStore do
   let(:model_instance_2) { SomeModel.new(id: 2, created_at: DateTime.now + 1, name: 'Jill', age: 21) }
   let(:model_instance_3) { SomeModel.new(id: 3, created_at: DateTime.now + 2, name: 'Josh', age: 22) }
 
+  def save_example_instances_to_store
+    model_store.save(model_instance)
+    model_store.save(model_instance_2)
+    model_store.save(model_instance_3)
+  end
+
   describe '#save' do
     context 'when the model instance is not in the store' do
       it 'saves a model instance to the store' do
@@ -68,9 +74,7 @@ describe ModelStore do
 
     context 'when model instances exist' do
       before :each do
-        model_store.save(model_instance)
-        model_store.save(model_instance_2)
-        model_store.save(model_instance_3)
+        save_example_instances_to_store
       end
 
       it 'returns all model instances' do
@@ -81,9 +85,7 @@ describe ModelStore do
 
   describe '#latest' do
     before :each do
-      model_store.save(model_instance)
-      model_store.save(model_instance_2)
-      model_store.save(model_instance_3)
+      save_example_instances_to_store
     end
 
     it 'returns the latest' do
@@ -93,9 +95,7 @@ describe ModelStore do
 
   describe '#delete' do
     before :each do
-      model_store.save(model_instance)
-      model_store.save(model_instance_2)
-      model_store.save(model_instance_3)
+      save_example_instances_to_store
     end
 
     it 'removes the instance' do
@@ -111,9 +111,7 @@ describe ModelStore do
 
   describe '#delete_all' do
     before :each do
-      model_store.save(model_instance)
-      model_store.save(model_instance_2)
-      model_store.save(model_instance_3)
+      save_example_instances_to_store
     end
 
     it 'removes the individual instances' do
@@ -121,7 +119,7 @@ describe ModelStore do
       expect(model_store.get(model_instance.id)).to be_nil
     end
 
-    it 'removes the instances from all' do
+    it 'removes the instances from all as well' do
       model_store.delete_all
       expect(model_store.all).to eq([])
     end

@@ -3,9 +3,9 @@ describe '/api/sync-requests', type: :feature do
   let(:contentful_entry_store) { ContentfulEntryStore.new(redis: LocalSyncApp.settings.redis) }
   let(:sync_request_store) { SyncRequestStore.new(redis: LocalSyncApp.settings.redis) }
 
-  context 'when client POSTs sync request' do
+  context 'when client executes POST /api/sync-requests' do
     # Stub requests that goes out for sync
-    context 'with empty JSON request' do
+    context 'with empty JSON request payload' do
       let(:body) { raw_json_fixture 'contentful/initial_sync_response' }
       before :each do
         stub_request(:get, %r{cdn\.contentful\.com\/spaces\/.+\/sync\?initial=true})
@@ -49,7 +49,7 @@ describe '/api/sync-requests', type: :feature do
       end
     end
 
-    context 'with initial true sync request' do
+    context 'with initial: true request payload' do
       let(:body) { raw_json_fixture 'contentful/initial_sync_response' }
       let(:payload) { { initial: :true }.to_json }
       before :each do
@@ -68,7 +68,7 @@ describe '/api/sync-requests', type: :feature do
       end
     end
 
-    context 'when contentful client times out' do
+    context 'when Contentful client times out' do
       before :each do
         stub_request(:get, %r{cdn\.contentful\.com\/})
           .to_raise(SocketError)

@@ -1,5 +1,5 @@
 describe '/api', type: :feature do
-  context 'when client GETs the API root' do
+  context 'when client executes GET /api' do
     before :each do
       get '/api'
     end
