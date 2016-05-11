@@ -55,7 +55,7 @@ describe SynchronizeContentfulData do
       end
 
       if expect_sync_request_deleted
-        it 'deletes the current sync request' do
+        it 'deletes the previous sync request' do
           synchronize_contentful_data.call(**kwargs)
           expect(sync_request_store.get(previous_sync_request.id)).to be_nil
         end
